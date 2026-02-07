@@ -38,7 +38,6 @@ Ensure you update the following items to customize the project:
 This template includes two GitHub Actions workflows:
 
 - **Build (`build.yml`)**: Triggered on every push and pull request to the `main` branch. It ensures the code is clean and buildable by running:
-
   - Dependency installation (`npm ci`)
   - Linting (`npm run lint`)
   - Formatting checks (`npm run format:check`)
