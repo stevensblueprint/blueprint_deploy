@@ -37,8 +37,6 @@ jobs:
           VITE_COGNITO_REDIRECT_SIGN_OUT: ${{ secrets.VITE_COGNITO_REDIRECT_SIGN_OUT }}
           VITE_COGNITO_USER_POOL_CLIENT_ID: ${{ secrets.VITE_COGNITO_USER_POOL_CLIENT_ID }}
           VITE_COGNITO_USER_POOL_ID: ${{ secrets.VITE_COGNITO_USER_POOL_ID }}
-          VITE_PASSWORD_VAULT_API_URL: ${{ secrets.VITE_PASSWORD_VAULT_API_URL }}
-          VITE_APP_URL: ${{ secrets.VITE_APP_URL }}
 
         run: |
           if [ -f package.json ]; then npm run build; else echo "No build step"; fi
@@ -46,7 +44,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: ${{ env.AWS_REGION }}
-          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github-deployer-blueprint_vault
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github-deployer-blueprint_deploy
           role-session-name: gh-deploy-static
 
       - name: Upload to S3
