@@ -52,8 +52,14 @@ export const createDeployment = (payload: DeployRequest) => {
 
 export const getDeployments = () => deployApi.get<Deployment[]>("/deployments");
 
-export const deleteDeployment = (name: string) =>
-  deployApi.delete(`/deployments/${name}`);
+export const deleteDeployment = (params: {
+  name: string;
+  githubRepositoryName: string;
+  subdomain: string;
+}) =>
+  deployApi.delete("/deployments", {
+    params,
+  });
 
 export const getDeploymentStatus = (executionId: string) => {
   return deployApi.get<DeploymentStatusResponse>(`/deployment/${executionId}`);

@@ -33,7 +33,7 @@ export function DeploymentList({ onCreateNew }: DeploymentListProps) {
   const [deployments, setDeployments] = useState<Deployment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [deploymentToDelete, setDeploymentToDelete] = useState<string | null>(
+  const [deploymentToDelete, setDeploymentToDelete] = useState<Deployment | null>(
     null,
   );
 
@@ -58,7 +58,11 @@ export function DeploymentList({ onCreateNew }: DeploymentListProps) {
     if (!deploymentToDelete) return;
 
     try {
-      await deleteDeployment(deploymentToDelete);
+      await deleteDeployment({
+        name: deploymentToDelete.name,
+        githubRepositoryName: deploymentToDelete.githubRepositoryName,
+        subdomain: deploymentToDelete.subdomain,
+      });
       await fetchDeployments();
       setDeploymentToDelete(null);
     } catch (err) {
@@ -163,7 +167,7 @@ export function DeploymentList({ onCreateNew }: DeploymentListProps) {
                     <Button
                       variant="ghost"
                       className="text-black/60 hover:text-black"
-                      onClick={() => setDeploymentToDelete(deployment.name)}
+                      onClick={() => setDeploymentToDelete(deployment)}
                     >
                       <X className="h-4 w-4" />
                     </Button>
@@ -184,7 +188,7 @@ export function DeploymentList({ onCreateNew }: DeploymentListProps) {
             <DialogTitle>Confirm Deletion</DialogTitle>
             <DialogDescription>
               Are you sure you want to delete the deployment{" "}
-              <strong>{deploymentToDelete}</strong>? This action cannot be
+              <strong>{deploymentToDelete?.name}</strong>? This action cannot be
               undone.
             </DialogDescription>
           </DialogHeader>
