@@ -45,8 +45,7 @@ export const createDeployment = (payload: DeployRequest) => {
   return deployApi.post<DeployResponse>("/deploy", payload);
 };
 
-export const getDeployments = () =>
-  deployApi.get<Deployment[]>("/deployments");
+export const getDeployments = () => deployApi.get<Deployment[]>("/deployments");
 
 export const deleteDeployment = (name: string) =>
   deployApi.delete(`/deployments/${name}`);

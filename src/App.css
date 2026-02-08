@@ -65,7 +65,8 @@ body {
 
 .app-preview pre {
   margin: 0;
-  font-family: "SFMono-Regular", SFMono, Menlo, Monaco, Consolas, "Liberation Mono",
+  font-family:
+    "SFMono-Regular", SFMono, Menlo, Monaco, Consolas, "Liberation Mono",
     "Courier New", monospace;
   font-size: 0.8rem;
   color: #0f172a;

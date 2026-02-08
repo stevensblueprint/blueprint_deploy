@@ -12,7 +12,7 @@ const Switch = React.forwardRef<
       type="checkbox"
       className={cn(
         "peer absolute inset-0 h-full w-full cursor-pointer opacity-0",
-        className
+        className,
       )}
       {...props}
     />

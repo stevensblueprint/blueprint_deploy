@@ -106,7 +106,10 @@ export function DeploymentForm({ onSuccess }: DeploymentFormProps) {
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor="githubRepositoryName" className="flex items-center gap-2">
+          <Label
+            htmlFor="githubRepositoryName"
+            className="flex items-center gap-2"
+          >
             <Github className="h-4 w-4" />
             <span>GitHub repository</span>
           </Label>
