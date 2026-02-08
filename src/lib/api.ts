@@ -11,6 +11,8 @@ export type DeployRequest = {
   includeRootDomain: boolean;
 };
 
+export type Deployment = DeployRequest;
+
 export type DeployResponse = {
   message: string;
   pipelineExecutionId: string;
@@ -42,6 +44,12 @@ export const createDeployment = (payload: DeployRequest) => {
   console.log("Creating deployment with payload:", payload);
   return deployApi.post<DeployResponse>("/deploy", payload);
 };
+
+export const getDeployments = () =>
+  deployApi.get<Deployment[]>("/deployments");
+
+export const deleteDeployment = (name: string) =>
+  deployApi.delete(`/deployments/${name}`);
 
 export const getDeploymentStatus = (executionId: string) =>
   deployApi.get<DeploymentStatusResponse>(`/deployment/${executionId}`);
