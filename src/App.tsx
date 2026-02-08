@@ -11,7 +11,7 @@ export const OAuthCallback = () => {
 
   useEffect(() => {
     if (!loading && isAuthenticated) {
-      const redirect = sessionStorage.getItem("oauth_redirect") || "/dashboard";
+      const redirect = sessionStorage.getItem("oauth_redirect") || "/";
       sessionStorage.removeItem("oauth_redirect");
       navigate(redirect);
     }
