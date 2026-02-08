@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import axios from "axios";
 
 import "./App.css";
 import {
@@ -13,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { api, getApiErrorMessage } from "@/lib/api";
 
 type DeploymentFormState = {
   name: string;
@@ -35,7 +37,9 @@ const initialFormState: DeploymentFormState = {
 function App() {
   const [formState, setFormState] =
     useState<DeploymentFormState>(initialFormState);
-  const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
 
   const payloadPreview = useMemo(
     () => JSON.stringify(formState, null, 2),
@@ -44,17 +48,46 @@ function App() {
 
   const handleChange = (key: keyof DeploymentFormState, value: string) => {
     setFormState((prev) => ({ ...prev, [key]: value }));
-    setSubmitted(false);
+    setSubmitSuccess(false);
   };
 
   const handleToggle = (key: keyof DeploymentFormState, value: boolean) => {
     setFormState((prev) => ({ ...prev, [key]: value }));
-    setSubmitted(false);
+    setSubmitSuccess(false);
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSubmitted(true);
+    if (isSubmitting) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+    setSubmitSuccess(false);
+
+    try {
+      const response = await api.post<{
+        message: string;
+        pipelineExecutionId: string;
+      }>("/api/deployments", formState);
+      const { pipelineExecutionId } = response.data;
+
+      if (pipelineExecutionId) {
+        const nextUrl = new URL(window.location.href);
+        nextUrl.searchParams.set("pipelineExecutionId", pipelineExecutionId);
+        window.history.replaceState(null, "", nextUrl.toString());
+      }
+
+      setSubmitSuccess(true);
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        return;
+      }
+      setSubmitError(getApiErrorMessage(error));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -68,11 +101,16 @@ function App() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="app-form" onSubmit={handleSubmit}>
+          <form
+            className="app-form"
+            onSubmit={handleSubmit}
+            aria-busy={isSubmitting}
+          >
             <div className="grid gap-2">
               <Label htmlFor="name">Application name</Label>
               <Input
                 id="name"
+                required
                 value={formState.name}
                 onChange={(event) => handleChange("name", event.target.value)}
                 placeholder="inreach"
@@ -83,6 +121,7 @@ function App() {
               <Label htmlFor="subdomain">Subdomain</Label>
               <Input
                 id="subdomain"
+                required
                 value={formState.subdomain}
                 onChange={(event) =>
                   handleChange("subdomain", event.target.value)
@@ -95,6 +134,7 @@ function App() {
               <Label htmlFor="githubRepositoryName">GitHub repository</Label>
               <Input
                 id="githubRepositoryName"
+                required
                 value={formState.githubRepositoryName}
                 onChange={(event) =>
                   handleChange("githubRepositoryName", event.target.value)
@@ -107,6 +147,7 @@ function App() {
               <Label htmlFor="githubBranchName">GitHub branch</Label>
               <Input
                 id="githubBranchName"
+                required
                 value={formState.githubBranchName}
                 onChange={(event) =>
                   handleChange("githubBranchName", event.target.value)
@@ -147,19 +188,27 @@ function App() {
               />
             </div>
 
-            <Button type="submit" className="w-full">
-              Create deployment
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? "Creating deployment..." : "Create deployment"}
             </Button>
+            {submitError && (
+              <p className="text-sm text-red-600" role="alert">
+                {submitError}
+              </p>
+            )}
+            {submitSuccess && (
+              <p className="text-sm text-emerald-600" role="status">
+                Form submitted.
+              </p>
+            )}
           </form>
         </CardContent>
         <CardFooter className="app-footer">
           <div className="app-preview">
             <div className="app-preview-header">
               <span className="text-sm font-medium">Payload preview</span>
-              {submitted && (
-                <span className="text-xs text-emerald-600">
-                  Ready to deploy
-                </span>
+              {submitSuccess && (
+                <span className="text-xs text-emerald-600">Submitted</span>
               )}
             </div>
             <pre>{payloadPreview}</pre>
