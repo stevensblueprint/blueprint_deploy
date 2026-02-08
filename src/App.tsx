@@ -3,6 +3,7 @@ import "./App.css";
 import { DeploymentForm } from "./components/DeploymentForm";
 import { DeploymentStatusView } from "./components/DeploymentStatusView";
 import { DeploymentList } from "./components/DeploymentList";
+import { Navbar } from "./components/Navbar";
 import {
   Dialog,
   DialogContent,
@@ -16,7 +17,7 @@ function App() {
     const params = new URLSearchParams(window.location.search);
     return params.get("pipelineExecutionId");
   });
-  
+
   const [isCreating, setIsCreating] = useState(false);
 
   useEffect(() => {
@@ -44,25 +45,28 @@ function App() {
   };
 
   return (
-    <div className="app-shell">
-      {executionId ? (
-        <DeploymentStatusView executionId={executionId} onReset={handleReset} />
-      ) : (
-        <>
-          <DeploymentList onCreateNew={() => setIsCreating(true)} />
-          <Dialog open={isCreating} onOpenChange={setIsCreating}>
-            <DialogContent className="sm:max-w-[520px]">
-              <DialogHeader>
-                <DialogTitle>Create Deployment</DialogTitle>
-                <DialogDescription>
-                  Define your deployment details to generate a new environment.
-                </DialogDescription>
-              </DialogHeader>
-              <DeploymentForm onSuccess={handleSuccess} />
-            </DialogContent>
-          </Dialog>
-        </>
-      )}
+    <div className="flex flex-col min-h-screen bg-white">
+      <Navbar />
+      <main className="app-shell flex-1">
+        {executionId ? (
+          <DeploymentStatusView executionId={executionId} onReset={handleReset} />
+        ) : (
+          <>
+            <DeploymentList onCreateNew={() => setIsCreating(true)} />
+            <Dialog open={isCreating} onOpenChange={setIsCreating}>
+              <DialogContent className="sm:max-w-130">
+                <DialogHeader>
+                  <DialogTitle>Create Deployment</DialogTitle>
+                  <DialogDescription>
+                    Define your deployment details to generate a new environment.
+                  </DialogDescription>
+                </DialogHeader>
+                <DeploymentForm onSuccess={handleSuccess} />
+              </DialogContent>
+            </Dialog>
+          </>
+        )}
+      </main>
     </div>
   );
 }
