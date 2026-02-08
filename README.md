@@ -9,53 +9,68 @@
   />
 </picture>
 
-# Blueprint React + Vite Template
+# Blueprint Deploy Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The Blueprint Deploy Dashboard is a centralized interface for managing cloud-native environment deployments. It allows teams to orchestrate pipelines, monitor environment health, and manage ephemeral infrastructure with ease.
 
-## Getting Started Checklist
+## Core Features
 
-Ensure you update the following items to customize the project:
+- 🔐 **Secure Authentication**: Integrated with AWS Cognito via AWS Amplify.
+- 🚀 **One-Click Deployments**: Easily deploy specific GitHub branches to custom subdomains.
+- 📊 **Real-Time Monitoring**: Granular visibility into CI/CD pipeline stages (Source, Build, Deploy).
+- 📋 **Deployment Management**: List and decommission environments from a single view.
+- 🔗 **Deep Linking**: URL-based execution tracking for easy sharing and bookmarking.
 
-- [ ] **Favicon**: Update the `<link rel="icon">` in `index.html` and replace the logo in `src/assets/`.
-- [ ] **Project Title**: Update the `<title>` tag in `index.html`.
-- [ ] **Package Info**: Update `name`, `version`, and `description` in `package.json`.
-- [ ] **GitHub Secrets**: Configure your secretsin your GitHub repository:
-  - All `VITE_*` environment variables required by your application.
-  - Update them in `.github/workflows/deploy.yml` so they are also built into the deployed site
+## Documentation
 
-```yaml
-- name: Build site
-  env:
-    VITE_AWS_REGION: ${{ secrets.VITE_AWS_REGION }}
-    ...
-    VITE_APP_URL: ${{ secrets.VITE_APP_URL }}
-    VITE_YOUR_ENV_VARIABLE: ${{ secrets.YOUR_ENV_VARIABLE }}
-```
+Detailed documentation is available in the `docs/` directory:
+
+- [Software Requirements Specification (SRS)](./docs/software-requirements-specification.md)
+- [Product Requirements Document (PRD)](./docs/product-requirements-document.md)
+- [Architecture Design Document (ADD)](./docs/architecture-design-document.md)
+- [Technical Design Document (TDD)](./docs/technical-design-document.md)
+- [Product Backlog](./docs/backlog.md)
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (Latest LTS recommended)
+- Access to the Blueprint Backend API
+- AWS Credentials (for deployment workflows)
+
+### Local Development
+
+1. **Clone and Install**:
+   ```bash
+   npm install
+   ```
+
+2. **Configure Environment**:
+   Create a `.env.local` file with the following:
+   ```env
+   VITE_API_BASE_URL=https://api.your-domain.com
+   VITE_AWS_REGION=your-region
+   VITE_USER_POOL_ID=your-pool-id
+   VITE_USER_POOL_CLIENT_ID=your-client-id
+   ```
+
+3. **Run Dev Server**:
+   ```bash
+   npm run dev
+   ```
 
 ## GitHub Workflows
 
-This template includes two GitHub Actions workflows:
+This project includes two primary workflows:
 
-- **Build (`build.yml`)**: Triggered on every push and pull request to the `main` branch. It ensures the code is clean and buildable by running:
-  - Dependency installation (`npm ci`)
-  - Linting (`npm run lint`)
-  - Formatting checks (`npm run format:check`)
-  - Production build (`npm run build`)
-
-- **Deploy (`deploy.yml`)**: Triggered on every push to the `main` branch. It automates the deployment to AWS by:
-  - Building the production application with the necessary environment variables.
-  - Authenticating with AWS using OIDC.
-  - Synchronizing the build output (`dist/`) to an S3 bucket.
-  - Invalidating the CloudFront distribution to ensure the latest version is served.
+- **Build (`build.yml`)**: Continuous integration ensuring code quality (lint, format, build).
+- **Deploy (`deploy.yml`)**: Continuous deployment to AWS (S3 + CloudFront).
 
 ## Scripts
 
-Available `package.json` scripts:
-
-- `npm run dev`: Start the Vite dev server with HMR.
-- `npm run build`: Type-check with TypeScript project references and build for production.
-- `npm run lint`: Run ESLint across the codebase.
-- `npm run format:check`: Check formatting with Prettier without writing changes.
-- `npm run format:fix`: Format files with Prettier and write changes.
-- `npm run preview`: Preview the production build locally.
+- `npm run dev`: Start Vite dev server.
+- `npm run build`: Production build and type checking.
+- `npm run lint`: Run ESLint.
+- `npm run format:check`: Verify code formatting.
+- `npm run format:fix`: Apply Prettier formatting.
