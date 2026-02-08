@@ -4,6 +4,7 @@ import {
   XCircle,
   Clock,
   ArrowRight,
+  ExternalLink,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
@@ -115,11 +116,22 @@ export function DeploymentStatusView({
               <h2 className="text-2xl font-bold tracking-tight">
                 Deployment Pipeline
               </h2>
-              <p className="text-sm text-muted-foreground">
-                Execution ID:{" "}
-                <span className="font-mono text-xs font-semibold">
-                  {executionId}
+              <p className="text-sm text-muted-foreground flex flex-col items-center gap-1">
+                <span>
+                  Execution ID:{" "}
+                  <span className="font-mono text-xs font-semibold">
+                    {executionId}
+                  </span>
                 </span>
+                <a
+                  href={`https://904233098281-tm3revhu.us-east-1.console.aws.amazon.com/codesuite/codepipeline/pipelines/blueprint-deployments-pipeline/executions/${executionId}/visualization?region=us-east-1`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1 transition-colors"
+                >
+                  <ExternalLink className="h-3 w-3" />
+                  View in AWS CodePipeline
+                </a>
               </p>
               {statusData?.status && (
                 <div className="inline-flex items-center justify-center px-4 py-1.5 rounded-full text-sm font-semibold gap-2 mt-4 bg-muted/50 border">
