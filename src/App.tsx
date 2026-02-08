@@ -3,7 +3,13 @@ import "./App.css";
 import { DeploymentForm } from "./components/DeploymentForm";
 import { DeploymentStatusView } from "./components/DeploymentStatusView";
 import { DeploymentList } from "./components/DeploymentList";
-import { Button } from "./components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 function App() {
   const [executionId, setExecutionId] = useState<string | null>(() => {
@@ -39,20 +45,23 @@ function App() {
 
   return (
     <div className="app-shell">
-      <div className="app-glow" />
       {executionId ? (
         <DeploymentStatusView executionId={executionId} onReset={handleReset} />
-      ) : isCreating ? (
-        <div className="relative z-10 flex flex-col gap-4 items-center w-full">
-          <div className="flex justify-start w-full max-w-[520px]">
-            <Button variant="ghost" onClick={() => setIsCreating(false)}>
-              ← Back to list
-            </Button>
-          </div>
-          <DeploymentForm onSuccess={handleSuccess} />
-        </div>
       ) : (
-        <DeploymentList onCreateNew={() => setIsCreating(true)} />
+        <>
+          <DeploymentList onCreateNew={() => setIsCreating(true)} />
+          <Dialog open={isCreating} onOpenChange={setIsCreating}>
+            <DialogContent className="sm:max-w-[520px]">
+              <DialogHeader>
+                <DialogTitle>Create Deployment</DialogTitle>
+                <DialogDescription>
+                  Define your deployment details to generate a new environment.
+                </DialogDescription>
+              </DialogHeader>
+              <DeploymentForm onSuccess={handleSuccess} />
+            </DialogContent>
+          </Dialog>
+        </>
       )}
     </div>
   );

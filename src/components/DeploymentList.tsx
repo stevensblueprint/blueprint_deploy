@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   type Deployment,
   getDeployments,
@@ -70,7 +72,7 @@ export function DeploymentList({ onCreateNew }: DeploymentListProps) {
   }
 
   return (
-    <div className="relative z-10 flex flex-col gap-6 items-center w-full max-w-4xl">
+    <div className="relative z-10 flex flex-col gap-6 items-center w-full max-w-5xl">
       <div className="flex justify-between items-center w-full">
         <h1 className="text-2xl font-bold">Active Deployments</h1>
         <Button onClick={onCreateNew}>Create New Deployment</Button>
@@ -93,48 +95,39 @@ export function DeploymentList({ onCreateNew }: DeploymentListProps) {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4 w-full md:grid-cols-2">
-          {deployments.map((deployment) => (
-            <Card key={deployment.name} className="relative overflow-hidden">
-              <CardHeader className="pb-2">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle>{deployment.name}</CardTitle>
-                    <CardDescription>
-                      {deployment.subdomain}.sitblueprint.com
-                    </CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-1 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Repository:</span>
-                    <span className="font-medium">
-                      {deployment.githubRepositoryName}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Branch:</span>
-                    <span className="font-medium">
-                      {deployment.githubBranchName}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Auth:</span>
-                    <span className="font-medium">
-                      {deployment.requiresAuth ? "Yes" : "No"}
-                    </span>
-                  </div>
-                </div>
-                <div className="mt-4 flex justify-end">
-                  <Button onClick={() => handleDelete(deployment.name)}>
-                    Delete
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="w-full">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="px-0">Name</TableHead>
+                <TableHead>URL</TableHead>
+                <TableHead>Repository</TableHead>
+                <TableHead>Branch</TableHead>
+                <TableHead>Auth</TableHead>
+                <TableHead className="text-right px-0">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {deployments.map((deployment) => (
+                <TableRow key={deployment.name}>
+                  <TableCell className="font-medium px-0">
+                    {deployment.name}
+                  </TableCell>
+                  <TableCell>{deployment.subdomain}.sitblueprint.com</TableCell>
+                  <TableCell>{deployment.githubRepositoryName}</TableCell>
+                  <TableCell>{deployment.githubBranchName}</TableCell>
+                  <TableCell>
+                    {deployment.requiresAuth ? "Yes" : "No"}
+                  </TableCell>
+                  <TableCell className="text-right px-0">
+                    <Button onClick={() => handleDelete(deployment.name)}>
+                      Delete
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       )}
     </div>
