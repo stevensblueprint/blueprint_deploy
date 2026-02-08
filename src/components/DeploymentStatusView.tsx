@@ -1,3 +1,4 @@
+import { CheckCircle2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import {
@@ -7,18 +8,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import {
-  getApiErrorMessage,
-  getDeploymentStatus,
-} from "@/lib/api";
+import { getApiErrorMessage, getDeploymentStatus } from "@/lib/api";
 
 interface DeploymentStatusViewProps {
   executionId: string;
   onReset: () => void;
 }
 
-export function DeploymentStatusView({ executionId, onReset }: DeploymentStatusViewProps) {
+export function DeploymentStatusView({
+  executionId,
+}: DeploymentStatusViewProps) {
   const [executionStatus, setExecutionStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const pollerRef = useRef<number | null>(null);
@@ -70,18 +69,20 @@ export function DeploymentStatusView({ executionId, onReset }: DeploymentStatusV
         </div>
         <div className="grid gap-2">
           <p className="text-sm font-medium">Status:</p>
-          <p className="text-sm text-muted-foreground" role="status">
-            {executionStatus || "Fetching status..."}
-          </p>
+          <div className="flex items-center gap-2" role="status">
+            {executionStatus === "Succeeded" && (
+              <CheckCircle2 className="h-5 w-5 text-green-500 fill-white" />
+            )}
+            <p className="text-sm text-muted-foreground">
+              {executionStatus || "Fetching status..."}
+            </p>
+          </div>
         </div>
         {error && (
           <p className="text-sm text-red-600" role="alert">
             {error}
           </p>
         )}
-        <Button onClick={onReset} variant="outline" className="mt-4">
-          Create New Deployment
-        </Button>
       </CardContent>
     </Card>
   );
