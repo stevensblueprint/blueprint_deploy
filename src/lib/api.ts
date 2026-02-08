@@ -24,10 +24,16 @@ export type DeploymentStatus =
   | "Failed"
   | "Canceled";
 
+export interface Stage {
+  name: string;
+  status: string;
+  lastUpdate?: string;
+}
+
 export type DeploymentStatusResponse = {
   executionId: string;
-  status: DeploymentStatus;
-  stages: unknown[];
+  status: string;
+  stages: Stage[];
   url: string | null;
   error: string | null;
 };
@@ -41,7 +47,6 @@ export const deployApi = axios.create({
 });
 
 export const createDeployment = (payload: DeployRequest) => {
-  console.log("Creating deployment with payload:", payload);
   return deployApi.post<DeployResponse>("/deploy", payload);
 };
 
@@ -50,8 +55,9 @@ export const getDeployments = () => deployApi.get<Deployment[]>("/deployments");
 export const deleteDeployment = (name: string) =>
   deployApi.delete(`/deployments/${name}`);
 
-export const getDeploymentStatus = (executionId: string) =>
-  deployApi.get<DeploymentStatusResponse>(`/deployment/${executionId}`);
+export const getDeploymentStatus = (executionId: string) => {
+  return deployApi.get<DeploymentStatusResponse>(`/deployment/${executionId}`);
+};
 
 export const getApiErrorMessage = (error: unknown) => {
   if (axios.isAxiosError(error)) {
