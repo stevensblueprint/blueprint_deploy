@@ -22,6 +22,15 @@ interface DeploymentStatusViewProps {
 
 const STAGE_ORDER = ["Source", "Build", "Deploy"];
 
+const STAGE_DESCRIPTIONS: Record<string, string> = {
+  Source:
+    "Getting configuration and preparing source artifacts. This stage ensures all necessary files and settings are pulled and validated before the build begins.",
+  Build:
+    "Building your AWS resources. This involves provisioning core infrastructure, compiling code, and preparing the cloud environment according to your specifications.",
+  Deploy:
+    "Deploying AWS resources. The final stage where your application is pushed to the target environment, making it accessible at the provided URL.",
+};
+
 export function DeploymentStatusView({
   executionId,
 }: DeploymentStatusViewProps) {
@@ -150,7 +159,7 @@ export function DeploymentStatusView({
           >
             <Card
               className={cn(
-                "w-64 md:w-72 lg:w-80 shadow-md transition-all duration-300 transform hover:scale-[1.02]",
+                "w-64 md:w-72 lg:w-80 shadow-md transition-all duration-300 transform hover:scale-[1.02] group relative overflow-hidden",
                 stage.status === "InProgress"
                   ? "border-blue-500 ring-2 ring-blue-500/20"
                   : stage.status === "Succeeded"
@@ -186,6 +195,17 @@ export function DeploymentStatusView({
                       Updated: {new Date(stage.lastUpdate).toLocaleTimeString()}
                     </p>
                   )}
+                </div>
+
+                {/* Hover Overlay Information */}
+                <div className="absolute inset-0 bg-background/95 opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-6 flex flex-col justify-center text-center">
+                  <h4 className="text-sm font-bold uppercase tracking-wider mb-2 text-primary">
+                    Stage Details
+                  </h4>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {STAGE_DESCRIPTIONS[stage.name] ||
+                      "Detailed information for this stage is currently unavailable."}
+                  </p>
                 </div>
               </CardContent>
             </Card>
