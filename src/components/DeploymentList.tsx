@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { X, Github } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   type Deployment,
   getDeployments,
@@ -25,6 +33,9 @@ export function DeploymentList({ onCreateNew }: DeploymentListProps) {
   const [deployments, setDeployments] = useState<Deployment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deploymentToDelete, setDeploymentToDelete] = useState<string | null>(
+    null,
+  );
 
   const fetchDeployments = async () => {
     setIsLoading(true);
@@ -43,18 +54,13 @@ export function DeploymentList({ onCreateNew }: DeploymentListProps) {
     fetchDeployments();
   }, []);
 
-  const handleDelete = async (name: string) => {
-    if (
-      !window.confirm(
-        `Are you sure you want to delete the deployment "${name}"?`,
-      )
-    ) {
-      return;
-    }
+  const handleDelete = async () => {
+    if (!deploymentToDelete) return;
 
     try {
-      await deleteDeployment(name);
+      await deleteDeployment(deploymentToDelete);
       await fetchDeployments();
+      setDeploymentToDelete(null);
     } catch (err) {
       alert(getApiErrorMessage(err));
     }
@@ -119,8 +125,28 @@ export function DeploymentList({ onCreateNew }: DeploymentListProps) {
                   <TableCell className="font-medium px-0">
                     {deployment.name}
                   </TableCell>
-                  <TableCell>{deployment.subdomain}.sitblueprint.com</TableCell>
-                  <TableCell>{deployment.githubRepositoryName}</TableCell>
+                  <TableCell>
+                    <a
+                      href={`https://${deployment.subdomain}.sitblueprint.com`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
+                      {deployment.subdomain}.sitblueprint.com
+                    </a>
+                  </TableCell>
+                                    <TableCell>
+                                      <a 
+                                        href={`https://github.com/stevensblueprint/${deployment.githubRepositoryName}`} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-2 px-2 py-1 rounded-md border border-border bg-muted/30 hover:bg-muted transition-colors text-foreground"
+                                      >
+                                        <Github className="h-4 w-4" />
+                                        <span className="text-sm font-medium">{deployment.githubRepositoryName}</span>
+                                      </a>
+                                    </TableCell>
+                  
                   <TableCell>{deployment.githubBranchName}</TableCell>
                   <TableCell>
                     {deployment.requiresAuth ? "Yes" : "No"}
@@ -129,7 +155,7 @@ export function DeploymentList({ onCreateNew }: DeploymentListProps) {
                     <Button
                       variant="ghost"
                       className="text-black/60 hover:text-black"
-                      onClick={() => handleDelete(deployment.name)}
+                      onClick={() => setDeploymentToDelete(deployment.name)}
                     >
                       <X className="h-4 w-4" />
                     </Button>
@@ -140,6 +166,33 @@ export function DeploymentList({ onCreateNew }: DeploymentListProps) {
           </Table>
         </div>
       )}
+
+      <Dialog
+        open={!!deploymentToDelete}
+        onOpenChange={(open) => !open && setDeploymentToDelete(null)}
+      >
+        <DialogContent className="sm:max-w-106.25">
+          <DialogHeader>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete the deployment{" "}
+              <strong>{deploymentToDelete}</strong>? This action cannot be
+              undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => setDeploymentToDelete(null)}
+            >
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDelete}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
