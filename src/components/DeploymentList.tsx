@@ -1,3 +1,4 @@
+import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -75,7 +76,12 @@ export function DeploymentList({ onCreateNew }: DeploymentListProps) {
     <div className="relative z-10 flex flex-col gap-6 items-center w-full max-w-5xl">
       <div className="flex justify-between items-center w-full">
         <h1 className="text-2xl font-bold">Active Deployments</h1>
-        <Button onClick={onCreateNew}>Create New Deployment</Button>
+        <Button
+          onClick={onCreateNew}
+          className="bg-[#95C9FF] hover:bg-[#0078E8] text-white transition-colors"
+        >
+          Create New Deployment
+        </Button>
       </div>
 
       {error && (
@@ -104,7 +110,7 @@ export function DeploymentList({ onCreateNew }: DeploymentListProps) {
                 <TableHead>Repository</TableHead>
                 <TableHead>Branch</TableHead>
                 <TableHead>Auth</TableHead>
-                <TableHead className="text-right px-0">Actions</TableHead>
+                <TableHead className="text-right px-0">Delete</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -120,8 +126,12 @@ export function DeploymentList({ onCreateNew }: DeploymentListProps) {
                     {deployment.requiresAuth ? "Yes" : "No"}
                   </TableCell>
                   <TableCell className="text-right px-0">
-                    <Button onClick={() => handleDelete(deployment.name)}>
-                      Delete
+                    <Button
+                      variant="ghost"
+                      className="text-black/60 hover:text-black"
+                      onClick={() => handleDelete(deployment.name)}
+                    >
+                      <X className="h-4 w-4" />
                     </Button>
                   </TableCell>
                 </TableRow>

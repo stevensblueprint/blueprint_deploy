@@ -2,20 +2,25 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-type ButtonVariant = "default" | "secondary" | "outline" | "ghost";
+type ButtonVariant =
+  | "default"
+  | "secondary"
+  | "outline"
+  | "ghost"
+  | "destructive";
 
 export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: ButtonVariant;
 };
 
 const variantClasses: Record<ButtonVariant, string> = {
-  default:
-    "bg-primary text-primary-foreground shadow hover:bg-primary/90",
-  secondary:
-    "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+  default: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
+  secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
   outline:
     "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
-  ghost: "hover:bg-accent hover:text-accent-foreground",
+  ghost: "hover:text-accent-foreground",
+  destructive:
+    "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
 };
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -26,11 +31,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       className={cn(
         "inline-flex h-10 items-center justify-center gap-2 rounded-md px-4 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
         variantClasses[variant],
-        className
+        className,
       )}
       {...props}
     />
-  )
+  ),
 );
 
 Button.displayName = "Button";
