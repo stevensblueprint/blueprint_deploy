@@ -33,9 +33,8 @@ export function DeploymentList({ onCreateNew }: DeploymentListProps) {
   const [deployments, setDeployments] = useState<Deployment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [deploymentToDelete, setDeploymentToDelete] = useState<Deployment | null>(
-    null,
-  );
+  const [deploymentToDelete, setDeploymentToDelete] =
+    useState<Deployment | null>(null);
 
   const fetchDeployments = async () => {
     setIsLoading(true);
