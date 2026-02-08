@@ -42,12 +42,14 @@ Detailed documentation is available in the `docs/` directory:
 ### Local Development
 
 1. **Clone and Install**:
+
    ```bash
    npm install
    ```
 
 2. **Configure Environment**:
    Create a `.env.local` file with the following:
+
    ```env
    VITE_API_BASE_URL=https://api.your-domain.com
    VITE_AWS_REGION=your-region

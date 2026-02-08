@@ -1,11 +1,13 @@
 # Architecture Design Document (ADD)
 
 ## 1. System Overview
+
 The Blueprint Deploy application is a decoupled frontend-backend system. This repository contains the React frontend, which communicates with a serverless backend on AWS.
 
 ## 2. Technology Stack
 
 ### 2.1 Frontend
+
 - **Framework**: React 19
 - **Build Tool**: Vite
 - **Language**: TypeScript
@@ -15,6 +17,7 @@ The Blueprint Deploy application is a decoupled frontend-backend system. This re
 - **HTTP Client**: Axios
 
 ### 2.2 Infrastructure & DevOps
+
 - **Hosting**: AWS S3 (Static Website Hosting)
 - **CDN**: AWS CloudFront
 - **Auth**: AWS Amplify / Cognito (OIDC)
@@ -35,15 +38,19 @@ graph TD
 ## 4. Key Components
 
 ### 4.1 Authentication Service (`AuthContext.tsx`)
+
 Wraps the application with AWS Amplify. Manages sign-in/sign-out state and provides the user object to the rest of the app.
 
 ### 4.2 API Layer (`src/lib/api.ts`)
+
 Centralized Axios instance. Defines types for all requests and responses, ensuring type safety across the application.
 
 ### 4.3 Deployment Engine (`Home.tsx`)
+
 Coordinates the main dashboard state. Handles switching between the deployment list and the status monitoring view based on URL parameters (`pipelineExecutionId`).
 
 ## 5. Security Architecture
+
 - **JWT Tokens**: Authentication tokens from Cognito are handled by AWS Amplify and sent via the API client.
 - **Environment Variables**: `VITE_` prefixed variables are used to inject API endpoints and region information at build time.
 - **OIDC**: Deployment to AWS uses OpenID Connect to avoid long-lived credentials in GitHub Secrets.
