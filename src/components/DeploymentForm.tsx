@@ -1,13 +1,11 @@
+import { Github, GitFork } from "lucide-react";
 import { useState } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import {
-  createDeployment,
-  getApiErrorMessage,
-} from "@/lib/api";
+import { createDeployment, getApiErrorMessage } from "@/lib/api";
 
 type DeploymentFormState = {
   name: string;
@@ -108,7 +106,10 @@ export function DeploymentForm({ onSuccess }: DeploymentFormProps) {
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor="githubRepositoryName">GitHub repository</Label>
+          <Label htmlFor="githubRepositoryName" className="flex items-center gap-2">
+            <Github className="h-4 w-4" />
+            <span>GitHub repository</span>
+          </Label>
           <Input
             id="githubRepositoryName"
             required
@@ -121,7 +122,10 @@ export function DeploymentForm({ onSuccess }: DeploymentFormProps) {
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor="githubBranchName">GitHub branch</Label>
+          <Label htmlFor="githubBranchName" className="flex items-center gap-2">
+            <GitFork className="h-4 w-4" />
+            <span>GitHub branch</span>
+          </Label>
           <Input
             id="githubBranchName"
             required
@@ -165,7 +169,11 @@ export function DeploymentForm({ onSuccess }: DeploymentFormProps) {
           />
         </div>
 
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
+        <Button
+          type="submit"
+          className="w-full bg-[#0078E8] hover:bg-[#0058A9] text-white transition-colors"
+          disabled={isSubmitting}
+        >
           {isSubmitting ? "Creating deployment..." : "Create deployment"}
         </Button>
         {submitError && (

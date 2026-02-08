@@ -1,4 +1,4 @@
-import { X, Github } from "lucide-react";
+import { X, Github, ExternalLink, GitFork } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -84,7 +84,7 @@ export function DeploymentList({ onCreateNew }: DeploymentListProps) {
         <h1 className="text-2xl font-bold">Active Deployments</h1>
         <Button
           onClick={onCreateNew}
-          className="bg-[#95C9FF] hover:bg-[#0078E8] text-white transition-colors"
+          className="bg-[#0078E8] hover:bg-[#0058A9] text-white transition-colors"
         >
           Create New Deployment
         </Button>
@@ -130,24 +130,32 @@ export function DeploymentList({ onCreateNew }: DeploymentListProps) {
                       href={`https://${deployment.subdomain}.sitblueprint.com`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline"
+                      className="inline-flex items-center gap-1.5 text-foreground hover:text-blue-600 transition-colors group"
                     >
-                      {deployment.subdomain}.sitblueprint.com
+                      <span>{deployment.subdomain}.sitblueprint.com</span>
+                      <ExternalLink className="h-3.5 w-3.5 text-muted-foreground group-hover:text-blue-600 transition-colors" />
                     </a>
                   </TableCell>
-                                    <TableCell>
-                                      <a 
-                                        href={`https://github.com/stevensblueprint/${deployment.githubRepositoryName}`} 
-                                        target="_blank" 
-                                        rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-2 px-2 py-1 rounded-md border border-border bg-muted/30 hover:bg-muted transition-colors text-foreground"
-                                      >
-                                        <Github className="h-4 w-4" />
-                                        <span className="text-sm font-medium">{deployment.githubRepositoryName}</span>
-                                      </a>
-                                    </TableCell>
-                  
-                  <TableCell>{deployment.githubBranchName}</TableCell>
+                  <TableCell>
+                    <a
+                      href={`https://github.com/stevensblueprint/${deployment.githubRepositoryName}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-2 py-1 rounded-md border border-border bg-muted/30 hover:bg-muted transition-colors text-foreground"
+                    >
+                      <Github className="h-4 w-4" />
+                      <span className="text-sm font-medium">
+                        {deployment.githubRepositoryName}
+                      </span>
+                    </a>
+                  </TableCell>
+
+                  <TableCell>
+                    <div className="flex items-center gap-1.5">
+                      <GitFork className="h-3.5 w-3.5 text-muted-foreground" />
+                      <span>{deployment.githubBranchName}</span>
+                    </div>
+                  </TableCell>
                   <TableCell>
                     {deployment.requiresAuth ? "Yes" : "No"}
                   </TableCell>

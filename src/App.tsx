@@ -49,16 +49,22 @@ function App() {
       <Navbar />
       <main className="app-shell flex-1">
         {executionId ? (
-          <DeploymentStatusView executionId={executionId} onReset={handleReset} />
+          <DeploymentStatusView
+            executionId={executionId}
+            onReset={handleReset}
+          />
         ) : (
           <>
             <DeploymentList onCreateNew={() => setIsCreating(true)} />
             <Dialog open={isCreating} onOpenChange={setIsCreating}>
               <DialogContent className="sm:max-w-130">
                 <DialogHeader>
-                  <DialogTitle>Create Deployment</DialogTitle>
+                  <DialogTitle className="text-lg">
+                    Create Deployment
+                  </DialogTitle>
                   <DialogDescription>
-                    Define your deployment details to generate a new environment.
+                    Define your deployment details to generate a new
+                    environment.
                   </DialogDescription>
                 </DialogHeader>
                 <DeploymentForm onSuccess={handleSuccess} />
