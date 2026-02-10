@@ -1,10 +1,16 @@
-import { Github, GitFork } from "lucide-react";
+import { Github, GitFork, Info } from "lucide-react";
 import { useState } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { createDeployment, getApiErrorMessage } from "@/lib/api";
 
 type DeploymentFormState = {
@@ -77,25 +83,51 @@ export function DeploymentForm({ onSuccess }: DeploymentFormProps) {
   };
 
   return (
-    <div className="space-y-6">
-      <form
-        className="app-form"
-        onSubmit={handleSubmit}
-        aria-busy={isSubmitting}
-      >
-        <div className="grid gap-2">
-          <Label htmlFor="name">Application name</Label>
-          <Input
-            id="name"
-            required
-            value={formState.name}
-            onChange={(event) => handleChange("name", event.target.value)}
-            placeholder="inreach"
-          />
-        </div>
+    <TooltipProvider>
+      <div className="space-y-6">
+        <form
+          className="app-form"
+          onSubmit={handleSubmit}
+          aria-busy={isSubmitting}
+        >
+          <div className="grid gap-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="name">Application name</Label>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button type="button" className="cursor-default">
+                    <Info className="h-4 w-4 text-muted-foreground" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>A unique name for your application.</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+            <Input
+              id="name"
+              required
+              autoFocus
+              value={formState.name}
+              onChange={(event) => handleChange("name", event.target.value)}
+              placeholder="inreach"
+            />
+          </div>
 
         <div className="grid gap-2">
-          <Label htmlFor="subdomain">Subdomain</Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="subdomain">Subdomain</Label>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button type="button" className="cursor-default">
+                  <Info className="h-4 w-4 text-muted-foreground" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>The subdomain where your app will be hosted. E.g., 'myapp' results in 'myapp.sitblueprint.com'.</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
           <Input
             id="subdomain"
             required
@@ -103,16 +135,33 @@ export function DeploymentForm({ onSuccess }: DeploymentFormProps) {
             onChange={(event) => handleChange("subdomain", event.target.value)}
             placeholder="inreach"
           />
+          {formState.subdomain && (
+            <p className="text-sm text-muted-foreground">
+              Preview: <span className="font-medium text-blue-600 underline">https://{formState.subdomain}.sitblueprint.com</span>
+            </p>
+          )}
         </div>
 
         <div className="grid gap-2">
-          <Label
-            htmlFor="githubRepositoryName"
-            className="flex items-center gap-2"
-          >
-            <Github className="h-4 w-4" />
-            <span>GitHub repository</span>
-          </Label>
+          <div className="flex items-center justify-between">
+            <Label
+              htmlFor="githubRepositoryName"
+              className="flex items-center gap-2"
+            >
+              <Github className="h-4 w-4" />
+              <span>GitHub repository</span>
+            </Label>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button type="button" className="cursor-default">
+                  <Info className="h-4 w-4 text-muted-foreground" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>The name of the repository in your GitHub account containing the application code.</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
           <Input
             id="githubRepositoryName"
             required
@@ -125,10 +174,22 @@ export function DeploymentForm({ onSuccess }: DeploymentFormProps) {
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor="githubBranchName" className="flex items-center gap-2">
-            <GitFork className="h-4 w-4" />
-            <span>GitHub branch</span>
-          </Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="githubBranchName" className="flex items-center gap-2">
+              <GitFork className="h-4 w-4" />
+              <span>GitHub branch</span>
+            </Label>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button type="button" className="cursor-default">
+                  <Info className="h-4 w-4 text-muted-foreground" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>The specific branch you want to deploy (e.g., 'main' or 'staging').</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
           <Input
             id="githubBranchName"
             required
@@ -142,10 +203,19 @@ export function DeploymentForm({ onSuccess }: DeploymentFormProps) {
 
         <div className="app-toggle">
           <div className="grid gap-1">
-            <Label htmlFor="requiresAuth">Requires auth</Label>
-            <span className="text-xs text-muted-foreground">
-              Protect this deployment behind authentication.
-            </span>
+            <div className="flex items-center gap-2">
+              <Label htmlFor="requiresAuth">Requires auth</Label>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button type="button" className="cursor-default">
+                    <Info className="h-3 w-3 text-muted-foreground" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Protect this deployment with authentication. Users will need to sign in to access the app.</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
           </div>
           <Switch
             id="requiresAuth"
@@ -158,10 +228,19 @@ export function DeploymentForm({ onSuccess }: DeploymentFormProps) {
 
         <div className="app-toggle">
           <div className="grid gap-1">
-            <Label htmlFor="includeRootDomain">Include root domain</Label>
-            <span className="text-xs text-muted-foreground">
-              Serve traffic from the apex domain as well.
-            </span>
+            <div className="flex items-center gap-2">
+              <Label htmlFor="includeRootDomain">Include root domain</Label>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button type="button" className="cursor-default">
+                    <Info className="h-3 w-3 text-muted-foreground" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Serve traffic from the apex domain as well. Note: only one app can be assigned to the root domain.</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
           </div>
           <Switch
             id="includeRootDomain"
@@ -186,5 +265,6 @@ export function DeploymentForm({ onSuccess }: DeploymentFormProps) {
         )}
       </form>
     </div>
+  </TooltipProvider>
   );
 }
