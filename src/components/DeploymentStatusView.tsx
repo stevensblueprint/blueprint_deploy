@@ -94,6 +94,17 @@ export function DeploymentStatusView({
     }
   };
 
+  if (!statusData && !error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-100 space-y-4 py-12">
+        <Loader2 className="h-12 w-12 text-blue-500 animate-spin" />
+        <p className="text-lg font-medium text-muted-foreground animate-pulse">
+          Getting deployment status...
+        </p>
+      </div>
+    );
+  }
+
   const sortedStages = STAGE_ORDER.map((stageName) => {
     const stage = statusData?.stages.find((s) => s.name === stageName);
     return (

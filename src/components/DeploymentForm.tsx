@@ -92,7 +92,7 @@ export function DeploymentForm({ onSuccess }: DeploymentFormProps) {
         >
           {submitError && (
             <p
-              className="text-sm text-red-600 break-words whitespace-pre-wrap"
+              className="text-sm text-red-600 wrap-break-word whitespace-pre-wrap"
               role="alert"
             >
               {submitError}
