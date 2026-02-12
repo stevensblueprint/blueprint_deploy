@@ -46,6 +46,7 @@ export function DeploymentStatusView({
       try {
         const response = await getDeploymentStatus(executionId);
         setStatusData(response.data);
+        setError(null);
 
         if (
           (response.data.status === "Succeeded" ||
@@ -64,10 +65,13 @@ export function DeploymentStatusView({
       }
     };
 
-    pollStatus();
-    pollerRef.current = window.setInterval(pollStatus, 5000); // Poll every 5 seconds for better UX
+    const initialTimeout = window.setTimeout(() => {
+      pollStatus();
+      pollerRef.current = window.setInterval(pollStatus, 5000);
+    }, 2000);
 
     return () => {
+      window.clearTimeout(initialTimeout);
       if (pollerRef.current) {
         window.clearInterval(pollerRef.current);
         pollerRef.current = null;
