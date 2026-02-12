@@ -90,6 +90,14 @@ export function DeploymentForm({ onSuccess }: DeploymentFormProps) {
           onSubmit={handleSubmit}
           aria-busy={isSubmitting}
         >
+          {submitError && (
+            <p
+              className="text-sm text-red-600 break-words whitespace-pre-wrap"
+              role="alert"
+            >
+              {submitError}
+            </p>
+          )}
           <div className="grid gap-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="name">Application name</Label>
@@ -281,14 +289,6 @@ export function DeploymentForm({ onSuccess }: DeploymentFormProps) {
           >
             {isSubmitting ? "Creating deployment..." : "Create deployment"}
           </Button>
-          {submitError && (
-            <p
-              className="text-sm text-red-600 break-words whitespace-pre-wrap"
-              role="alert"
-            >
-              {submitError}
-            </p>
-          )}
         </form>
       </div>
     </TooltipProvider>
