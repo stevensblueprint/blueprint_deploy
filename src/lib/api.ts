@@ -68,6 +68,19 @@ export const getDeploymentStatus = (executionId: string) => {
 export const getApiErrorMessage = (error: unknown) => {
   if (axios.isAxiosError(error)) {
     if (typeof error.response?.data === "string") {
+      // Try to extract JSON from error strings like:
+      // "Internal server error: GitHub API error 422 for <URL>: {JSON}"
+      const jsonMatch = error.response.data.match(/:\s*(\{.*\})\s*$/);
+      if (jsonMatch) {
+        try {
+          const parsedError = JSON.parse(jsonMatch[1]);
+          if (parsedError.message) {
+            return parsedError.message;
+          }
+        } catch {
+          // If JSON parsing fails, fall through to return the original string
+        }
+      }
       return error.response.data;
     }
 
