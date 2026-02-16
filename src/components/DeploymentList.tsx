@@ -1,4 +1,4 @@
-import { X, Github, ExternalLink, GitFork } from "lucide-react";
+import { Pencil, X, Github, ExternalLink, GitFork } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,9 +27,13 @@ import {
 
 interface DeploymentListProps {
   onCreateNew: () => void;
+  onUpdateDeployment: (deployment: Deployment) => void;
 }
 
-export function DeploymentList({ onCreateNew }: DeploymentListProps) {
+export function DeploymentList({
+  onCreateNew,
+  onUpdateDeployment,
+}: DeploymentListProps) {
   const [deployments, setDeployments] = useState<Deployment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -119,6 +123,7 @@ export function DeploymentList({ onCreateNew }: DeploymentListProps) {
                 <TableHead>Repository</TableHead>
                 <TableHead>Branch</TableHead>
                 <TableHead>Auth</TableHead>
+                <TableHead className="text-right">Update</TableHead>
                 <TableHead className="text-right px-0">Delete</TableHead>
               </TableRow>
             </TableHeader>
@@ -161,6 +166,15 @@ export function DeploymentList({ onCreateNew }: DeploymentListProps) {
                   </TableCell>
                   <TableCell>
                     {deployment.requiresAuth ? "Yes" : "No"}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      variant="ghost"
+                      className="text-black/60 hover:text-black"
+                      onClick={() => onUpdateDeployment(deployment)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
                   </TableCell>
                   <TableCell className="text-right px-0">
                     <Button

@@ -18,6 +18,10 @@ export type DeployResponse = {
   pipelineExecutionId: string;
 };
 
+export type UpdateDeploymentRequest = {
+  subdomain: string;
+};
+
 export type DeploymentStatus =
   | "InProgress"
   | "Succeeded"
@@ -48,6 +52,16 @@ export const deployApi = axios.create({
 
 export const createDeployment = (payload: DeployRequest) => {
   return deployApi.post<DeployResponse>("/deploy", payload);
+};
+
+export const updateDeployment = (
+  appName: string,
+  payload: UpdateDeploymentRequest,
+) => {
+  return deployApi.put<DeployResponse>(
+    `/deployment/${encodeURIComponent(appName)}`,
+    payload,
+  );
 };
 
 export const getDeployments = () => deployApi.get<Deployment[]>("/deployments");

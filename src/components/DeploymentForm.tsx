@@ -1,5 +1,5 @@
 import { Github, GitFork, Info } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,7 +11,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { createDeployment, getApiErrorMessage } from "@/lib/api";
+import {
+  createDeployment,
+  getApiErrorMessage,
+  updateDeployment,
+} from "@/lib/api";
 
 type DeploymentFormState = {
   name: string;
@@ -33,13 +37,36 @@ const initialFormState: DeploymentFormState = {
 
 interface DeploymentFormProps {
   onSuccess: (executionId: string) => void;
+  mode?: "create" | "update";
+  initialName?: string;
+  initialSubdomain?: string;
 }
 
-export function DeploymentForm({ onSuccess }: DeploymentFormProps) {
+export function DeploymentForm({
+  onSuccess,
+  mode = "create",
+  initialName = "",
+  initialSubdomain = "",
+}: DeploymentFormProps) {
   const [formState, setFormState] =
-    useState<DeploymentFormState>(initialFormState);
+    useState<DeploymentFormState>({
+      ...initialFormState,
+      name: initialName,
+      subdomain: initialSubdomain,
+    });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const isUpdateMode = mode === "update";
+
+  useEffect(() => {
+    setFormState({
+      ...initialFormState,
+      name: initialName,
+      subdomain: initialSubdomain,
+    });
+    setSubmitError(null);
+    setIsSubmitting(false);
+  }, [initialName, initialSubdomain, mode]);
 
   const handleChange = (key: keyof DeploymentFormState, value: string) => {
     setFormState((prev) => ({ ...prev, [key]: value }));
@@ -59,14 +86,18 @@ export function DeploymentForm({ onSuccess }: DeploymentFormProps) {
     setSubmitError(null);
 
     try {
-      const response = await createDeployment({
-        name: formState.name,
-        subdomain: formState.subdomain,
-        githubRepositoryName: formState.githubRepositoryName,
-        githubBranchName: formState.githubBranchName,
-        requiresAuth: formState.requiresAuth,
-        includeRootDomain: formState.includeRootDomain,
-      });
+      const response = isUpdateMode
+        ? await updateDeployment(formState.name, {
+            subdomain: formState.subdomain,
+          })
+        : await createDeployment({
+            name: formState.name,
+            subdomain: formState.subdomain,
+            githubRepositoryName: formState.githubRepositoryName,
+            githubBranchName: formState.githubBranchName,
+            requiresAuth: formState.requiresAuth,
+            includeRootDomain: formState.includeRootDomain,
+          });
       const { pipelineExecutionId } = response.data;
 
       if (pipelineExecutionId) {
@@ -115,10 +146,12 @@ export function DeploymentForm({ onSuccess }: DeploymentFormProps) {
             <Input
               id="name"
               required
-              autoFocus
+              autoFocus={!isUpdateMode}
               value={formState.name}
               onChange={(event) => handleChange("name", event.target.value)}
               placeholder="inreach"
+              readOnly={isUpdateMode}
+              disabled={isUpdateMode}
             />
           </div>
 
@@ -142,6 +175,7 @@ export function DeploymentForm({ onSuccess }: DeploymentFormProps) {
             <Input
               id="subdomain"
               required
+              autoFocus={isUpdateMode}
               value={formState.subdomain}
               onChange={(event) =>
                 handleChange("subdomain", event.target.value)
@@ -158,136 +192,148 @@ export function DeploymentForm({ onSuccess }: DeploymentFormProps) {
             )}
           </div>
 
-          <div className="grid gap-2">
-            <div className="flex items-center justify-between">
-              <Label
-                htmlFor="githubRepositoryName"
-                className="flex items-center gap-2"
-              >
-                <Github className="h-4 w-4" />
-                <span>GitHub repository</span>
-              </Label>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button type="button" className="cursor-default">
-                    <Info className="h-4 w-4 text-muted-foreground" />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>
-                    The name of the repository in your GitHub account containing
-                    the application code.
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </div>
-            <Input
-              id="githubRepositoryName"
-              required
-              value={formState.githubRepositoryName}
-              onChange={(event) =>
-                handleChange("githubRepositoryName", event.target.value)
-              }
-              placeholder="inreach_repo"
-            />
-          </div>
-
-          <div className="grid gap-2">
-            <div className="flex items-center justify-between">
-              <Label
-                htmlFor="githubBranchName"
-                className="flex items-center gap-2"
-              >
-                <GitFork className="h-4 w-4" />
-                <span>GitHub branch</span>
-              </Label>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button type="button" className="cursor-default">
-                    <Info className="h-4 w-4 text-muted-foreground" />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>
-                    The specific branch you want to deploy (e.g., 'main' or
-                    'staging').
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </div>
-            <Input
-              id="githubBranchName"
-              required
-              value={formState.githubBranchName}
-              onChange={(event) =>
-                handleChange("githubBranchName", event.target.value)
-              }
-              placeholder="main"
-            />
-          </div>
-
-          <div className="app-toggle">
-            <div className="grid gap-1">
-              <div className="flex items-center gap-2">
-                <Label htmlFor="requiresAuth">Requires auth</Label>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button type="button" className="cursor-default">
-                      <Info className="h-3 w-3 text-muted-foreground" />
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>
-                      Protect this deployment with authentication. Users will
-                      need to sign in to access the app.
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
+          {!isUpdateMode && (
+            <>
+              <div className="grid gap-2">
+                <div className="flex items-center justify-between">
+                  <Label
+                    htmlFor="githubRepositoryName"
+                    className="flex items-center gap-2"
+                  >
+                    <Github className="h-4 w-4" />
+                    <span>GitHub repository</span>
+                  </Label>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button type="button" className="cursor-default">
+                        <Info className="h-4 w-4 text-muted-foreground" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>
+                        The name of the repository in your GitHub account
+                        containing the application code.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+                <Input
+                  id="githubRepositoryName"
+                  required
+                  value={formState.githubRepositoryName}
+                  onChange={(event) =>
+                    handleChange("githubRepositoryName", event.target.value)
+                  }
+                  placeholder="inreach_repo"
+                />
               </div>
-            </div>
-            <Switch
-              id="requiresAuth"
-              checked={formState.requiresAuth}
-              onChange={(event) =>
-                handleToggle("requiresAuth", event.target.checked)
-              }
-            />
-          </div>
 
-          <div className="app-toggle">
-            <div className="grid gap-1">
-              <div className="flex items-center gap-2">
-                <Label htmlFor="includeRootDomain">Include root domain</Label>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button type="button" className="cursor-default">
-                      <Info className="h-3 w-3 text-muted-foreground" />
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>
-                      Serve traffic from the apex domain as well. Note: only one
-                      app can be assigned to the root domain.
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
+              <div className="grid gap-2">
+                <div className="flex items-center justify-between">
+                  <Label
+                    htmlFor="githubBranchName"
+                    className="flex items-center gap-2"
+                  >
+                    <GitFork className="h-4 w-4" />
+                    <span>GitHub branch</span>
+                  </Label>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button type="button" className="cursor-default">
+                        <Info className="h-4 w-4 text-muted-foreground" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>
+                        The specific branch you want to deploy (e.g., 'main' or
+                        'staging').
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+                <Input
+                  id="githubBranchName"
+                  required
+                  value={formState.githubBranchName}
+                  onChange={(event) =>
+                    handleChange("githubBranchName", event.target.value)
+                  }
+                  placeholder="main"
+                />
               </div>
-            </div>
-            <Switch
-              id="includeRootDomain"
-              checked={formState.includeRootDomain}
-              onChange={(event) =>
-                handleToggle("includeRootDomain", event.target.checked)
-              }
-            />
-          </div>
+
+              <div className="app-toggle">
+                <div className="grid gap-1">
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="requiresAuth">Requires auth</Label>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button type="button" className="cursor-default">
+                          <Info className="h-3 w-3 text-muted-foreground" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>
+                          Protect this deployment with authentication. Users
+                          will need to sign in to access the app.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                </div>
+                <Switch
+                  id="requiresAuth"
+                  checked={formState.requiresAuth}
+                  onChange={(event) =>
+                    handleToggle("requiresAuth", event.target.checked)
+                  }
+                />
+              </div>
+
+              <div className="app-toggle">
+                <div className="grid gap-1">
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="includeRootDomain">
+                      Include root domain
+                    </Label>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button type="button" className="cursor-default">
+                          <Info className="h-3 w-3 text-muted-foreground" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>
+                          Serve traffic from the apex domain as well. Note: only
+                          one app can be assigned to the root domain.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                </div>
+                <Switch
+                  id="includeRootDomain"
+                  checked={formState.includeRootDomain}
+                  onChange={(event) =>
+                    handleToggle("includeRootDomain", event.target.checked)
+                  }
+                />
+              </div>
+            </>
+          )}
 
           <Button
             type="submit"
             className="w-full bg-[#0078E8] hover:bg-[#0058A9] text-white transition-colors"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Creating deployment..." : "Create deployment"}
+            {isSubmitting
+              ? isUpdateMode
+                ? "Updating deployment..."
+                : "Creating deployment..."
+              : isUpdateMode
+                ? "Update deployment"
+                : "Create deployment"}
           </Button>
         </form>
       </div>

@@ -3,6 +3,7 @@ import { DeploymentForm } from "../components/DeploymentForm";
 import { DeploymentStatusView } from "../components/DeploymentStatusView";
 import { DeploymentList } from "../components/DeploymentList";
 import { Navbar } from "../components/Navbar";
+import { type Deployment } from "@/lib/api";
 import {
   Dialog,
   DialogContent,
@@ -17,7 +18,10 @@ function Home() {
     return params.get("pipelineExecutionId");
   });
 
-  const [isCreating, setIsCreating] = useState(false);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [formMode, setFormMode] = useState<"create" | "update">("create");
+  const [deploymentToUpdate, setDeploymentToUpdate] =
+    useState<Deployment | null>(null);
 
   useEffect(() => {
     const handlePopState = () => {
@@ -34,13 +38,25 @@ function Home() {
     nextUrl.searchParams.set("pipelineExecutionId", id);
     window.history.pushState(null, "", nextUrl.toString());
     setExecutionId(id);
-    setIsCreating(false);
+    setIsFormOpen(false);
   };
 
   const handleReset = () => {
     window.history.pushState(null, "", window.location.pathname);
     setExecutionId(null);
-    setIsCreating(false);
+    setIsFormOpen(false);
+  };
+
+  const openCreateDialog = () => {
+    setFormMode("create");
+    setDeploymentToUpdate(null);
+    setIsFormOpen(true);
+  };
+
+  const openUpdateDialog = (deployment: Deployment) => {
+    setFormMode("update");
+    setDeploymentToUpdate(deployment);
+    setIsFormOpen(true);
   };
 
   return (
@@ -54,19 +70,30 @@ function Home() {
           />
         ) : (
           <>
-            <DeploymentList onCreateNew={() => setIsCreating(true)} />
-            <Dialog open={isCreating} onOpenChange={setIsCreating}>
+            <DeploymentList
+              onCreateNew={openCreateDialog}
+              onUpdateDeployment={openUpdateDialog}
+            />
+            <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
               <DialogContent className="sm:max-w-130">
                 <DialogHeader>
                   <DialogTitle className="text-lg">
-                    Create Deployment
+                    {formMode === "create"
+                      ? "Create Deployment"
+                      : "Update Deployment"}
                   </DialogTitle>
                   <DialogDescription>
-                    Define your deployment details to generate a new
-                    environment.
+                    {formMode === "create"
+                      ? "Define your deployment details to generate a new environment."
+                      : "Update only the subdomain for this deployment and trigger a new pipeline execution."}
                   </DialogDescription>
                 </DialogHeader>
-                <DeploymentForm onSuccess={handleSuccess} />
+                <DeploymentForm
+                  onSuccess={handleSuccess}
+                  mode={formMode}
+                  initialName={deploymentToUpdate?.name}
+                  initialSubdomain={deploymentToUpdate?.subdomain}
+                />
               </DialogContent>
             </Dialog>
           </>
