@@ -48,12 +48,11 @@ export function DeploymentForm({
   initialName = "",
   initialSubdomain = "",
 }: DeploymentFormProps) {
-  const [formState, setFormState] =
-    useState<DeploymentFormState>({
-      ...initialFormState,
-      name: initialName,
-      subdomain: initialSubdomain,
-    });
+  const [formState, setFormState] = useState<DeploymentFormState>({
+    ...initialFormState,
+    name: initialName,
+    subdomain: initialSubdomain,
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const isUpdateMode = mode === "update";
