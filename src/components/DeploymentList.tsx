@@ -1,4 +1,11 @@
-import { Pencil, X, Github, ExternalLink, GitFork } from "lucide-react";
+import {
+  Pencil,
+  X,
+  Github,
+  ExternalLink,
+  GitFork,
+  Loader2,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -75,13 +82,12 @@ export function DeploymentList({
 
   if (isLoading) {
     return (
-      <Card className="app-card">
-        <CardContent className="pt-6">
-          <p className="text-center text-muted-foreground">
-            Loading deployments...
-          </p>
-        </CardContent>
-      </Card>
+      <div className="w-full flex flex-col items-center justify-center space-y-4 py-12">
+        <Loader2 className="h-12 w-12 text-blue-500 animate-spin" />
+        <p className="text-lg font-medium text-muted-foreground animate-pulse">
+          Loading deployments...
+        </p>
+      </div>
     );
   }
 
