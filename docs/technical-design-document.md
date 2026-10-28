@@ -1,5 +1,7 @@
 # Technical Design Document (TDD)
 
+> **Status: Draft – not approved.** This document describes the frontend as currently implemented, plus planned behavior. Statements marked _Unverified_, _Assumed_, _Unknown_ or _Planned_ have not been confirmed or built. For audit findings, see [CURRENT_STATE.md](./CURRENT_STATE.md).
+
 ## 1. Component Design
 
 ### 1.1 `DeploymentStatusView.tsx`
@@ -7,20 +9,20 @@
 This component is responsible for polling the API to update the status of a specific deployment execution.
 
 - **Input**: `executionId` (string).
-- **Behavior**: Calls `getDeploymentStatus` every few seconds (polling logic).
+- **Behavior**: Calls `getDeploymentStatus` 2 seconds after loading, then every 5 seconds until the pipeline reaches a final state (Succeeded, Failed or Canceled).
 - **UI States**:
   - **Loading**: Initial fetch.
   - **Active**: Showing list of stages (Source, Build, Deploy) with current status icons.
-  - **Terminal**: Showing "Success" or "Failed" message with a button to return to the list.
+  - **Terminal**: Shows the final status, and a link to the deployed site on success. _Planned:_ a button to return to the list. This is not implemented yet: `Home` passes an `onReset` prop, but the component doesn't use it.
 
 ### 1.2 `DeploymentForm.tsx`
 
-A controlled form using standard React state or a library like `react-hook-form` (verify in code if needed).
+A controlled form using React `useState` (verified in code; no form library is used). It has two modes: **create** (all fields) and **update** (subdomain only).
 
 - **Validation**:
-  - Name and Subdomain are required.
-  - GitHub repository and branch must match patterns.
-- **Submission**: Calls `createDeployment` and triggers the `onSuccess` callback with the new `pipelineExecutionId`.
+  - All visible fields are required (HTML `required`).
+  - _Planned:_ GitHub repository, branch and subdomain must match patterns. This is not enforced in the client yet.
+- **Submission**: Calls `createDeployment` (create mode) or `updateDeployment` (update mode), then triggers the `onSuccess` callback with the returned `pipelineExecutionId`.
 
 ## 2. API Interaction Pattern
 
@@ -54,7 +56,7 @@ The application uses **URL-driven state** for its main view transition.
 
 ## 4. Authentication Flow
 
-- The `AuthProvider` initializes the Amplify library.
+- `main.tsx` configures Amplify with the Cognito settings, and `AuthProvider` tracks the session.
 - `ProtectedRoute` checks if the user is authenticated.
 - If not, it redirects to the login page (managed by Cognito).
 - After login, the `/callback` route handles the session cleanup and redirects the user back to the dashboard.

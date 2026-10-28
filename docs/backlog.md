@@ -1,5 +1,7 @@
 # Product Backlog
 
+> **Status: Proposed.** These items have not been prioritized or approved for a sprint yet.
+
 ## High Priority
 
 - [ ] **Real-time Updates**: Replace polling in `DeploymentStatusView` with WebSockets or AWS AppSync for instant feedback.

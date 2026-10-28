@@ -1,5 +1,7 @@
 # Software Requirements Specification (SRS)
 
+> **Status: Draft – not approved.** These requirements have not yet been approved by the Project Owner. Statements marked _Unverified_, _Assumed_, _Unknown_ or _Planned_ have not been confirmed or built. For audit findings, see [CURRENT_STATE.md](./CURRENT_STATE.md).
+
 ## 1. Introduction
 
 ### 1.1 Purpose
@@ -10,10 +12,10 @@ The purpose of the Blueprint Deploy dashboard is to provide a user-friendly inte
 
 The application handles:
 
-- Authentication via corporate identity providers (Cognito/OAuth).
+- Authentication through AWS Cognito (OAuth). _Unknown:_ which identity providers the user pool is configured with.
 - Creation of new deployment requests (subdomains, repositories, branches).
 - Listing and management of active deployments.
-- Real-time monitoring of deployment pipeline stages.
+- Monitoring of deployment pipeline stages. This currently uses polling; real-time updates are _Planned_ (see the backlog).
 
 ## 2. Functional Requirements
 
@@ -33,6 +35,7 @@ The application handles:
   - Authentication Requirement toggle
   - Root Domain inclusion toggle
 - **List**: Display existing deployments with their metadata.
+- **Update**: Change the subdomain of an existing deployment. Other fields cannot be updated yet.
 - **Delete**: Remove existing deployments.
 
 ### 2.3 Monitoring
@@ -55,5 +58,5 @@ The application handles:
 
 ### 3.3 Usability
 
-- The interface should use a clean, modern design system (Material/Tailwind).
+- The interface should use a clean, modern design system (currently Tailwind CSS with shadcn/ui).
 - Error messages from the API should be clearly communicated to the user.

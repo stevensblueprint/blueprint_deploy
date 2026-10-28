@@ -9,8 +9,28 @@ This document records the current state of the `blueprint_deploy` repository, ba
 5. Development setup status
 6. Security gaps
 7. Pending technical decisions
+8. Reuse recommendation
 
 **Last verified:** 2026-10-28, against commit `bbbf5de` on `main`.
+
+## Summary: Verified Facts vs Unknowns
+
+**Verified** (checked directly in the repository or by running the tooling):
+
+- The repository location, the single `main` branch and the commit history (§1)
+- The languages, frameworks and implemented features, which were read from the source code (§2)
+- The CI/CD workflow configuration and the GitHub secrets it expects (§3)
+- `npm ci`, `npm run lint`, `npm run build` and `npm run format:check` all pass. There are no tests (§5).
+- The `npm audit` results from 2026-10-28 (§6)
+
+**Unknown** (not checked yet, and needs someone with access):
+
+- Whether the AWS resources referenced in the repo exist and match (§3). The AWS CLI and credentials were not available.
+- Where the backend API, the deployment CodePipeline and their infrastructure code live, and how the API authenticates requests
+- GitHub settings: branch protection, Dependabot, secret scanning, and whether the Actions secrets are set
+- Whether the dashboard works end to end against the real backend
+- Which identity providers the Cognito user pool is configured with
+- Whether the layout works on mobile
 
 ## 1) Repository & Branch Locations
 
@@ -581,3 +601,25 @@ These need to be discussed in the next sprint planning:
 8. **Testing:** Choose a test stack (for example Vitest and React Testing Library) and decide how much coverage CI must enforce.
 9. **Backend repo:** Where do the backend API and CodePipeline/IaC live? They should be linked from this repo's docs so AWS resources can be traced and verified.
 10. **Scanning:** Turn on Dependabot (`.github/dependabot.yml`), CodeQL code scanning and secret scanning.
+
+## 8) Reuse Recommendation
+
+**Recommendation: keep and extend the existing frontend. Do not rewrite it.**
+
+Reasons:
+
+- It installs, lints and builds cleanly on the current toolchain (§5).
+- The core workflow is already implemented: login, and listing, creating, updating, deleting and monitoring deployments (§2).
+- The stack is current and widely used: React 19, Vite 7, TypeScript, Tailwind 4 and shadcn/ui.
+- The codebase is small (about 2,100 lines in `src/`), so it is easy for a new team to learn and own.
+- The gaps found in §4 and §6 can each be fixed in small changes. None of them needs a redesign.
+
+| Area                                                             | Recommendation                                                                                       |
+| ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Auth flow (`AuthContext.tsx`, `ProtectedRoute.tsx`, `/callback`) | Reuse as is. Add a logout button.                                                                    |
+| API layer (`src/lib/api.ts`)                                     | Reuse. Changes depend on pending decision 1.                                                         |
+| Deployment list and form                                         | Reuse. Add input validation, and add search later from the backlog.                                  |
+| Status view (`DeploymentStatusView.tsx`)                         | Reuse with fixes: console link, back button, polling limits.                                         |
+| UI components (`src/components/ui/`)                             | Reuse as is.                                                                                         |
+| CI/CD workflows                                                  | Reuse. Keep the OIDC deploy, gate it on the Build workflow, and use one Node version in both.        |
+| Backend, pipeline and infrastructure                             | **No recommendation yet.** They are not in this repo and have not been located (pending decision 9). |

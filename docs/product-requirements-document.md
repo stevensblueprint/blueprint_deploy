@@ -1,5 +1,7 @@
 # Product Requirements Document (PRD)
 
+> **Status: Draft – not approved.** The user stories and features have not yet been approved by the Project Owner. Statements marked _Unverified_, _Assumed_, _Unknown_ or _Planned_ have not been confirmed or built. For audit findings, see [CURRENT_STATE.md](./CURRENT_STATE.md).
+
 ## 1. Target Audience
 
 - Developers needing to spin up ephemeral environments.
@@ -21,7 +23,7 @@
 ### 3.1 Dashboard (Home)
 
 - The home page serves as the control center.
-- It displays a searchable list of deployments.
+- It displays a list of deployments. _Planned:_ search. This is not implemented yet (see the backlog).
 - A prominent "Create" button opens a modal for new requests.
 
 ### 3.2 Deployment Workflow
@@ -35,7 +37,7 @@
 
 - Use the "Blueprint" branding (logo and color scheme).
 - Clean, white background with professional typography.
-- Mobile-responsive layout for monitoring on the go.
+- Mobile-responsive layout for monitoring on the go. _Unverified:_ this has not been tested on mobile.
 
 ## 4. Success Metrics
 
